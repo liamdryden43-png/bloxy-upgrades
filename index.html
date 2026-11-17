@@ -1042,7 +1042,7 @@ function giveP(){const n=$("ap").value;if(!n){say("Add a pet in Pet values first
 (()=>{const w=$("wheel");let d=false;const mv=e=>{if(!d||busy)return;const c=chance();if(!c)return;const r=w.getBoundingClientRect(),a=Math.atan2(e.clientX-r.left-r.width/2,-(e.clientY-r.top-r.height/2))*180/Math.PI;mode="custom";off=(((a-c*1.8)%360)+360)%360;upd()};
 w.addEventListener("pointerdown",e=>{d=true;w.setPointerCapture(e.pointerId);mv(e)});w.addEventListener("pointermove",mv);w.addEventListener("pointerup",()=>d=false);w.addEventListener("pointercancel",()=>d=false)})();
 const keep=()=>{const o={};document.querySelectorAll("input[id^=ls-],input[id^=as-],input[id^=tg-]").forEach(i=>{o[i.id]=i.value});return o},back=o=>{for(const k in o){const e=$(k);if(e&&o[k])e.value=o[k]}};
-function drawLib(){const K=keep();drawLib0();back(K)}
+function drawLib(){const K=keep();drawLib0();back(K);if(window.varGen)setTimeout(varGen,50)}
 function drawAdm(){const K=keep();drawAdm0();back(K)}
 function drawPl(){const K=keep();drawPl0();drawAdT();if(ADT=="ov")drawOv();drawSm();drawRa();drawGift();back(K)}
 function drawSm(){const e=$("sm");if(!e)return;e.innerHTML=PL.filter(p=>p.id!=UID).map(p=>`<div class="ar"><span class="n">${esc(p.name||"?")}</span><button class="btn" data-i="${esc(p.id)}" onclick="perk(this.dataset.i,${PK.has(p.id)?0:1})">${PK.has(p.id)?"Remove access":"Give access"}</button></div>`).join("")||"No other players yet."}
