@@ -293,7 +293,7 @@ table{font-size:13px}th,td{padding:6px 4px}
   <div class="tag" style="text-align:center;margin:12px 0 8px;letter-spacing:.1em">QUICK SET TARGET</div>
   <div class="row"><button class="btn" onclick="qm(2)">x2</button><button class="btn" onclick="qm(4)">x4</button><button class="btn" onclick="qm(8)">x8</button></div>
   <div class="row" style="margin-top:8px"><button class="btn" onclick="qc(15)">15%</button><button class="btn" onclick="qc(45)">45%</button><button class="btn" onclick="qc(75)">75%</button></div>
-  <div class="note">Win chance = stake ÷ target value, minus a 5% house edge.</div></div>
+  <div class="note">Win chance is shown above, and it is the exact chance used.</div></div>
 </div>
 <div class="panel" style="margin-top:14px"><h2>Item Pool <span id="pc" class="tag"></span></h2><div class="note" style="margin:0 0 8px">Tap several pets to aim for all of them at once. Tap the same pet again to pick another copy, and keep tapping to clear it. Gems and pets other players lose land here.</div><input id="gt" type="text" autocomplete="off" placeholder="Gems to aim for (like 1b, 250m)" oninput="drawPool();upd()" style="margin-bottom:8px"><input id="q" placeholder="Search the pool…" oninput="drawPool()"><div class="items" id="pool"></div></div></section>
 <section id="p-fair" class="hide"><div class="panel"><div class="hero">Fairness</div>
@@ -302,7 +302,7 @@ table{font-size:13px}th,td{padding:6px 4px}
 <tr><td><b>Mines</b></td><td>Bombs are placed on random tiles when the round starts. Cash out pays for the tiles you uncovered.</td></tr>
 <tr><td><b>Towers</b></td><td>8 rows, one bomb hidden among 3 tiles in each row, placed at random. Each safe row multiplies your bet by x1.485.</td></tr>
 <tr><td><b>Upgrader</b></td><td>The win chance shown on screen is the exact chance used. Payout = your stake × the multiplier you pick.</td></tr>
-<tr><td><b>Coin Flip</b></td><td>A true 50/50 flip, picked at random when the second player joins. The winner gets 1.9x their wager.</td></tr>
+<tr><td><b>Coin Flip</b></td><td>A true 50/50 flip, picked at random when the second player joins.</td></tr>
 <tr><td><b>Color Dice</b></td><td>Dice are rolled at random for every player each round. Win the rounds to take the pot.</td></tr>
 </tbody></table>
 <h3 style="margin-top:18px">Good to know</h3>
@@ -775,7 +775,7 @@ e.innerHTML=`<div class="cdhd"><span class="cdlogo">🍂 Bloxy<span>Upgrades</sp
 <div class="cdsd ${fin&&lw?"dim":""} ${fin&&!lw?"win":""}">${d.j?avc(d.jn,0,bot,d.ja):'<div class="cdav" style="width:110px;height:110px;border:3px dashed #5a4632;background:none"><span style="font-size:44px;opacity:.6">?</span></div>'}<b class="cdnm">${esc(d.jn||"Open seat")}</b>${bot?'<span class="cdchip" style="background:#3a2a1c">BOT</span>':""}<div class="cdchs">${oid}</div></div></div>
 ${fin?`<div class="cdhist"><div class="cdht">FLIP HISTORY · 1 FLIP</div><div class="cdh"><span class="cdn">#1</span>${chip(d.r,22)}<span class="cdsc"><b style="color:#f97316">${lw?1:0}</b> <span style="opacity:.55">vs</span> <b style="color:#8f6bf0">${lw?0:1}</b></span></div></div>`:""}
 <div class="cdwags">${wag(d.n,1,lw&&fin)}${wag(d.jn,!!d.j,fin&&!lw)}</div>
-<div style="display:flex;justify-content:space-between;align-items:center;padding:0 18px 16px;gap:10px;flex-wrap:wrap"><span class="tag" style="background:#0d0a07;border-radius:999px;padding:6px 14px">🛡 Room <b style="color:var(--text)">#${esc(d.id.slice(-6).toUpperCase())}</b></span><button class="cdsec" onclick="FAIR=!FAIR;cfShow()">Fairness ${FAIR?"▴":"▾"}</button>${fin?`<button class="cdbtn" onclick="cfAgain()">Play again</button>`:""}</div>${FAIR?'<div class="note" style="padding:0 18px 16px">Heads or tails is a true 50/50, picked at random when the second player joins. The winner gets 1.9x their wager. See the Fairness tab for every game’s odds.</div>':""}`;
+<div style="display:flex;justify-content:space-between;align-items:center;padding:0 18px 16px;gap:10px;flex-wrap:wrap"><span class="tag" style="background:#0d0a07;border-radius:999px;padding:6px 14px">🛡 Room <b style="color:var(--text)">#${esc(d.id.slice(-6).toUpperCase())}</b></span><button class="cdsec" onclick="FAIR=!FAIR;cfShow()">Fairness ${FAIR?"▴":"▾"}</button>${fin?`<button class="cdbtn" onclick="cfAgain()">Play again</button>`:""}</div>${FAIR?'<div class="note" style="padding:0 18px 16px">Heads or tails is a true 50/50, picked at random when the second player joins. See the Fairness tab for every game’s odds.</div>':""}`;
 LAND=false;if(anim&&done){CFA=true;sfxFlip();swapFace();setTimeout(()=>{CFA=false;LAND=true;cfShow();setTimeout(()=>sfxLand(d.w==UID),1100)},3600)}}
 function cfSync(docs){FL=docs;cfDraw();const now=Date.now();docs.filter(d=>d.st=="done"&&now-d.t<8000&&!SEEN.has(d.id)).forEach(d=>{SEEN.add(d.id);if(d.u==UID||d.j==UID||VIEW==d.id){VIEW=d.id;cfShow(1);$("cfm").classList.remove("hide")}});cfShow();cfExpire();setTimeout(cfApply,5600);cfApply()}
 function cfApply(){const now=Date.now();FL.forEach(d=>{const k="f:"+d.id;if(S.applied[k]||now-d.t>864e5||now-d.t<(d.st=="done"?5400:1500))return;if(d.st=="cancel"&&d.u==UID){S.applied[k]=1;S.gems+=d.b;save();bal();say("Flip cancelled. Bet returned.")}else if(d.st=="done"&&(d.u==UID||d.j==UID)){S.applied[k]=1;if(d.w==UID){S.gems+=pot(d);bal();say("You won "+fmt(pot(d))+" gems!")}save()}})}
