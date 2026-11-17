@@ -467,8 +467,9 @@ const SB_URL=(window.SB_CONFIG||{}).url||"PASTE", SB_KEY=(window.SB_CONFIG||{}).
 <script>
 const fresh=()=>({name:"Player",gems:0,inv:{},hist:[],won:0,xp:0,taken:{},pool:null,lostC:{},lostD:{},hg:0,lib:null,applied:{}});
 let S=fresh();try{const s=localStorage.getItem("pu2");if(s)S=Object.assign(fresh(),JSON.parse(s))}catch(e){}
+var RST=!window.__SB,LF=false;const DEV=Math.random().toString(36).slice(2,9);
 if(S.epoch!==3){S.epoch=3;S.signed=0;S.rbx=null;S.avatar="";try{localStorage.setItem("pu2",JSON.stringify(S))}catch(e){}}
-const save=()=>{try{localStorage.setItem("pu2",JSON.stringify(S))}catch(e){}clearTimeout(mt);mt=setTimeout(()=>{if(!(DB&&UID))return;const st=JSON.stringify({wag:S.wag||0,net:S.net||0,big:S.big||0,pl:S.pl||0,wn:S.wn||0}),hs=JSON.stringify((S.hist||[]).slice(0,10)),rid=(RBX&&RBX.id)?String(RBX.id):"";const j=JSON.stringify([S.name,S.gems,S.inv,S.xp,S.rbx,st,hs,rid]);if(j==lastMir)return;lastMir=j;DB.doc("players/"+UID).set({name:S.name||"Player",gems:S.gems,inv:JSON.stringify(S.inv),xp:S.xp,st,hs,rid,rbx:(S.signed&&S.rbx)?S.rbx.name:"",code:(S.signed&&S.rbx)?S.rbx.code:""}).catch(()=>{})},900)};
+const save=()=>{S.wt=Date.now();try{localStorage.setItem("pu2",JSON.stringify(S))}catch(e){}clearTimeout(mt);mt=setTimeout(()=>{if(!(DB&&UID&&RST))return;const st=JSON.stringify({wag:S.wag||0,net:S.net||0,big:S.big||0,pl:S.pl||0,wn:S.wn||0}),hs=JSON.stringify((S.hist||[]).slice(0,10)),rid=(RBX&&RBX.id)?String(RBX.id):"";const ap=JSON.stringify(S.applied||{}),j=JSON.stringify([S.name,S.gems,S.inv,S.xp,S.rbx,st,hs,rid,ap.length]);if(j==lastMir)return;lastMir=j;DB.doc("players/"+UID).set({name:S.name||"Player",gems:S.gems,inv:JSON.stringify(S.inv),xp:S.xp,st,hs,rid,ap,dev:DEV,wt:S.wt||Date.now(),rbx:(S.signed&&S.rbx)?S.rbx.name:"",code:(S.signed&&S.rbx)?S.rbx.code:""}).catch(()=>{})},900)};
 const BASE=[["Hippomelon","🍉",178e9],["Doge (Golden)","🐕",175e9],["Grim Reaper","💀",172e9],["Rose Wolf","🐺",145e9],["Elf Golem (Golden)","🗿",139e9],["Krampus","😈",125e9],["Lucki Angelus","🍀",120e9],["Floppa","🐱",112e9],["Tokusatsu","🦸",112e9],["Cyber Dragon","🐉",60e9],["Pixel Cat","😺",25e9],["Huge Bunny","🐰",8e9],["Fox","🦊",1e9],["Starter Dog","🐶",1e8]].map(([n,e,v],i)=>({id:"p"+i,n:"Gargantuan "+n,e,v,stock:1}));
 BASE.length=0;
 let P=S.pool||BASE,UID=null,PL=[],LIB=S.lib||[],lfFor=null,PERK=false,PK=new Set(),AP=new Set(),mt,lastMir,LOST=S.lostC,LD=S.lostD,HG=S.hg,TK=S.taken,CH=[],DB=null,OWN=false,tgts=new Map(),off=0,mode="under",busy=false,selPets=new Map(),rot=0,photoId=null,tb="home";
@@ -486,7 +487,18 @@ const lvl=()=>1+Math.floor(Math.sqrt(S.xp/50));
 async function init(){
  if(!S.inv2){S.inv2=1;S.inv={};save()}
  delete S.inv[""];
- if(window.claude){OWN=false;try{const u=await claude.use("user");OWN=u?await u.isOwner():false;document.body.classList.toggle("own",!!OWN);UID=u?await u.id():null;DB=await claude.use("db");RBX=(u&&u.rbxInfo)?await u.rbxInfo():null;S.name=(u&&u.rbxName?await u.rbxName():"")||"Player #"+String(UID||"anon").slice(-3);if(u&&u.rbxName&&await u.rbxName()&&DB&&UID){try{const d=await DB.doc("players/"+UID).get();if(d.exists){const x=d.data();S.gems=+x.gems||0;try{S.inv=JSON.parse(x.inv||"{}")}catch(e){}S.xp=+x.xp||0;try{save()}catch(e){}}}catch(e){}}}catch(e){}}
+ if(window.claude){OWN=false;try{const u=await claude.use("user");OWN=u?await u.isOwner():false;document.body.classList.toggle("own",!!OWN);UID=u?await u.id():null;DB=await claude.use("db");RBX=(u&&u.rbxInfo)?await u.rbxInfo():null;S.name=(u&&u.rbxName?await u.rbxName():"")||"Player #"+String(UID||"anon").slice(-3);if(u&&u.rbxName&&await u.rbxName()&&DB&&UID){
+ if(S.acct&&S.acct!==UID){S.gems=0;S.inv={};S.xp=0;S.hist=[];S.won=0;S.applied={};S.wag=0;S.net=0;S.big=0;S.pl=0;S.wn=0}
+ let ok=false;for(let n=0;n<4&&!ok;n++){try{const d=await DB.doc("players/"+UID).get();ok=true;
+  if(d.exists){const x=d.data();S.gems=+x.gems||0;try{S.inv=JSON.parse(x.inv||"{}")}catch(e){}S.xp=+x.xp||0;
+   try{const ap=JSON.parse(x.ap||"null");if(ap)Object.assign(S.applied,ap);else if(!Object.keys(S.applied||{}).length)LF=true}catch(e){}
+   try{const st=JSON.parse(x.st||"null");if(st){S.wag=+st.wag||0;S.net=+st.net||0;S.big=+st.big||0;S.pl=+st.pl||0;S.wn=+st.wn||0}}catch(e){}
+   try{const hs=JSON.parse(x.hs||"null");if(Array.isArray(hs)&&!(S.hist||[]).length)S.hist=hs}catch(e){}
+   S.wt=+x.wt||S.wt||0}}catch(e){await new Promise(r=>setTimeout(r,1500))}}
+ S.acct=UID;if(ok)RST=true;
+ if(LF){const raw=S.applied||{};let sw=true;S.applied=new Proxy(raw,{get(t,k){if(sw&&typeof k==="string"&&k!=="toJSON"&&!(k in t)){t[k]=1;return true}return t[k]}});setTimeout(()=>{sw=false},8000)}
+ try{save()}catch(e){}
+ if(ok)try{DB.doc("players/"+UID).onSnapshot(d=>{try{if(!d||!d.exists||!RST)return;const x=d.data();if(!x||x.dev===DEV)return;if(busy||(typeof M!=="undefined"&&M&&M.on)||(typeof T!=="undefined"&&T&&T.on))return;if((+x.wt||0)<=(S.wt||0))return;S.wt=+x.wt;S.gems=+x.gems||0;try{S.inv=JSON.parse(x.inv||"{}")}catch(e){}S.xp=+x.xp||0;try{const ap=JSON.parse(x.ap||"null");if(ap)Object.assign(S.applied,ap)}catch(e){}try{localStorage.setItem("pu2",JSON.stringify(S))}catch(e){}upd();redraw()}catch(e){}},()=>{})}catch(e){}}}catch(e){}}
  if(DB){try{
   DB.doc("pool/main").onSnapshot(s=>{if(poolFail||saving)return;if(s.exists){P=(s.data().pets||[]).filter(p=>p&&p.n);S.pool=P}else if(OWN){P=S.pool||[];if(P.length)savePool()}else P=BASE;redraw()},()=>{});
   DB.collection("taken").onSnapshot(q=>{TK={};q.docs.forEach(d=>{const k=d.data().pid;TK[k]=(TK[k]||0)+1});redraw()},()=>{});
