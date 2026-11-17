@@ -993,9 +993,10 @@ function vgDraw(im,v){const z=128,c=document.createElement("canvas");c.width=c.h
  x.globalCompositeOperation="source-over";
  if(v.includes("Shiny")){x.fillStyle="#fff";x.shadowColor="#fff";x.shadowBlur=10;[[.24,.24,15],[.76,.32,11],[.5,.76,13],[.18,.7,8],[.86,.82,9]].forEach(a=>vgStar(x,a[0]*z,a[1]*z,a[2]))}
  return c.toDataURL("image/jpeg",.88)}
-async function varGen(){try{const names=new Set(LIB.map(p=>p.n).concat(P.map(p=>p.n),Object.keys(S.inv||{})));let ch=0;
- for(const n of names){const v=VSX.find(y=>n.startsWith(y+" "));if(!v)continue;if(PIC[n]&&!GEN.has(n))continue;
-  const b=n.slice(v.length+1),bp=LIB.find(p=>p.n==b),src=PIC[b]||(bp&&bp.img);if(!src||GEN.get(n)===src.length)continue;
+function vgBase(b){const k=nk(b);let s=PIC[b]||"";if(s)return s;const L=[LIB,P,Object.values(S.cu||{})];for(const a of L){const f=a.find(p=>p&&(p.n==b||nk(p.n)==k)&&p.img);if(f)return f.img}try{if(LD&&LD[b]&&LD[b].img)return LD[b].img}catch(e){}const pk=Object.keys(PIC).find(x=>nk(x)==k&&!GEN.has(x));return pk?PIC[pk]:""}
+async function varGen(){try{const names=new Set(LIB.map(p=>p.n).concat(P.map(p=>p.n),Object.keys(S.inv||{}),Object.keys(S.cu||{}),(typeof LOST!="undefined"?Object.keys(LOST):[])));let ch=0;
+ for(const n of names){const v=VSX.find(y=>n.startsWith(y+" "));if(!v)continue;if(PIC[n]&&!GEN.has(n))continue;if([LIB,P].some(a=>a.some(p=>p.n==n&&p.img)))continue;
+  const b=n.slice(v.length+1),src=vgBase(b);if(!src||GEN.get(n)===src.length)continue;
   const im=await vgImg(src);if(!im)continue;PIC[n]=vgDraw(im,v);GEN.set(n,src.length);ch++}
  if(ch){try{drawLib()}catch(e){}try{redraw()}catch(e){}try{wGrid()}catch(e){}}}catch(e){}}
 picLoad();
