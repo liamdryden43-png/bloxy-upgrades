@@ -246,7 +246,7 @@ table{font-size:13px}th,td{padding:6px 4px}
 </style>
 </head><body>
 <header><div class="logo">Bloxy<span>Upgrades</span></div>
-<div style="display:flex;gap:10px;align-items:center"><span id="stm"></span><button class="hsea" id="aut" onclick="togAut()" title="Toggle Autumn mode"></button><span id="ring"></span><span id="sig"></span><div style="position:relative"><div class="wbx"><button class="wbl" onclick="togW()"><span class="gi">💎</span><span id="bal">0</span><span class="chv">⌄</span></button><button class="wbr" id="wb" onclick="togW()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="14" rx="2"/><path d="M3 10h18M16 15h2"/><path d="M6 6l10-3 2 3"/></svg>Wallet</button></div><div id="wp" class="hide" onclick="togW()"></div><div id="bkm" class="hide" onclick="if(event.target==this)bkClose()"></div><div id="pcm" class="hide" onclick="if(event.target==this)pcClose()"></div>
+<div style="display:flex;gap:10px;align-items:center"><span id="stm"></span><button class="hsea" id="aut" onclick="togAut()" title="Toggle Autumn mode"></button><span id="ring"></span><span id="rbxl"></span><span id="sig"></span><div style="position:relative"><div class="wbx"><button class="wbl" onclick="togW()"><span class="gi">💎</span><span id="bal">0</span><span class="chv">⌄</span></button><button class="wbr" id="wb" onclick="togW()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="14" rx="2"/><path d="M3 10h18M16 15h2"/><path d="M6 6l10-3 2 3"/></svg>Wallet</button></div><div id="wp" class="hide" onclick="togW()"></div><div id="bkm" class="hide" onclick="if(event.target==this)bkClose()"></div><div id="pcm" class="hide" onclick="if(event.target==this)pcClose()"></div>
 <div id="wpk" class="hide" onclick="if(event.target==this)clW()"><div class="panel" style="width:min(560px,100%);max-height:90vh;overflow:auto;background:#0e1427"><div style="display:flex;justify-content:space-between;align-items:center"><h2 style="margin:0">Your wallet</h2><button class="btn" onclick="clW()">Done</button></div><div class="row" style="margin:12px 0"><button class="btn pri" id="wtg" onclick="wpTab('g')">Gems</button><button class="btn" id="wtp" onclick="wpTab('p')">Pets</button></div>
 <div id="wpg"><input id="gin" type="text" autocomplete="off" placeholder="Gems to stake (like 1b, 250m, 5k)" oninput="upd()"><div class="note">Your balance: <b id="wpb"></b></div></div>
 <div id="wpp" class="hide"><div class="note">Tap a pet to stake it. Tap again to stake another copy.</div><div class="items" id="inv"></div></div></div></div>
@@ -332,6 +332,139 @@ table{font-size:13px}th,td{padding:6px 4px}
 <h3 style="margin-top:12px">Add a pet picture</h3><input id="pfn" list="pfl" placeholder="Pet name (start typing, then pick it)"><datalist id="pfl"></datalist><div id="pfz" tabindex="0" style="border:2px dashed var(--line);border-radius:12px;padding:18px;text-align:center;margin-top:8px;color:var(--mut);cursor:pointer;outline:none" onclick="this.focus()">Drop the pet picture here, or click here and paste it (Ctrl+V)</div><div class="note" id="pfm">On the pet site, drag the picture onto this box, or right-click it, choose Copy image, click the box and paste. A pasted link can't work, because the page can't download from other sites.</div>
 <h3 id="lc" style="margin-top:12px"></h3><div class="row" style="flex-wrap:wrap;margin-top:10px"><input id="lq" placeholder="Search for a pet…" oninput="LL=200;drawLib()" style="flex:2;min-width:180px"><select id="lt" onchange="LL=200;drawLib()"><option value="">All types</option><option>Gargantuan</option><option>Titanic</option><option>Huge</option></select><select id="lvf" onchange="LL=200;drawLib()"><option value="">All variants</option><option>Normal</option><option>Golden</option><option>Rainbow</option><option>Shiny</option><option>Rainbow Shiny</option><option>Golden Shiny</option></select><select id="lso" onchange="drawLib()"><option value="hi">Value: high to low</option><option value="lo">Value: low to high</option><option value="az">Name A to Z</option></select></div><div id="ll" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px;margin-top:12px"></div></div></section>
 </main><aside id="cc"><div id="cuc" class="panel" style="margin-bottom:12px"></div><section id="p-chat"><div class="lc"><div class="lch"><b>Live Chat</b><span>🍂</span><span class="lco"><i></i><span id="lcn">1</span> active</span><span style="flex:1"></span><button class="lcb" onclick="lcFold()" title="Hide chat" aria-label="Hide chat">›</button></div><div class="lca"><span>📢</span><div><small>Announcement</small><b>Be kind and have fun 🍂</b></div></div><div class="lcm" id="msgs"></div><div id="lcr" class="lcrp hide"></div><div id="lcru" class="lcru hide"><b>Chat rules</b><br>Be friendly. No spam, begging or scams. No sharing personal info. Staff decisions are final.</div><div class="lcf"><button class="lcrl" onclick="$('lcru').classList.toggle('hide')">📄 Chat Rules</button></div><div class="lcin"><input id="ci" maxlength="200" placeholder="Send a message…" onkeydown="if(event.key=='Enter')sendC()"><button class="lce" onclick="lcEmo()" aria-label="Emoji">☺</button><button class="lcs" onclick="sendC()" aria-label="Send">➤</button></div><div id="lcemo" class="lcemo hide"></div><div class="note" id="cn" style="padding:0 12px 8px"></div></div></section></aside></div><button id="lco2" onclick="lcFold()">💬 Live Chat</button>
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+/* ===== Supabase connection: values live in config.js (edit that file, not this one) ===== */
+const SB_URL=(window.SB_CONFIG||{}).url||"PASTE", SB_KEY=(window.SB_CONFIG||{}).key||"PASTE";
+/* ===== Compatibility layer: gives the page the same db/user API it had inside Claude ===== */
+(function(){
+  if(window.claude||!window.supabase||/^PASTE/.test(SB_URL)||/^PASTE/.test(SB_KEY))return;
+  const sb=supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefreshToken:true}});
+  window.__sb=sb;window.__SB={url:SB_URL,key:SB_KEY};
+  let me=null,owner=false,ready=null,sess=null;
+  const boot=()=>ready||(ready=(async()=>{
+    let {data:{session}}=await sb.auth.getSession();
+    if(!session){const r=await sb.auth.signInAnonymously();session=r.data&&r.data.session}
+    sess=session;me=session&&session.user?session.user.id:null;
+    window.whoami=()=>me;
+    console.log("Your Supabase user id (needed once to make yourself owner):",me);
+    try{const r=await sb.from("owners").select("uid").eq("uid",me);owner=!!(r.data&&r.data.length)}catch(e){}
+  })());
+  const j=v=>JSON.parse(JSON.stringify(v));
+  const mkq=(col,f)=>{ // collection query
+    const q={f:f||[],o:null,l:null};
+    const fetchAll=async()=>{
+      let r=sb.from("docs").select("id,data").eq("col",col);
+      q.f.forEach(w=>{r=r.filter("data->>"+w[0],"eq",String(w[2]))});
+      if(q.o)r=r.order("data->"+q.o[0],{ascending:q.o[1]!=="desc"});
+      if(q.l)r=r.limit(q.l);
+      const {data,error}=await r;if(error)throw error;
+      let rows=data||[];
+      if(q.o){const k=q.o[0],d=q.o[1]==="desc"?-1:1;rows=rows.slice().sort((a,b)=>((+a.data[k]||0)-(+b.data[k]||0))*d)}
+      const docs=rows.map(x=>({id:x.id,data:()=>j(x.data),exists:true}));
+      return {docs,size:docs.length,empty:!docs.length,forEach:fn=>docs.forEach(fn)};
+    };
+    const o={
+      where(a,op,b){q.f.push([a,op,b]);return o},
+      orderBy(k,d){q.o=[k,d||"asc"];return o},
+      limit(n){q.l=n;return o},
+      get:fetchAll,
+      doc:id=>docRef(col,id),
+      onSnapshot(cb,err){
+        let dead=false,tm=null;
+        const run=async()=>{if(dead)return;try{await boot();cb(await fetchAll())}catch(e){err&&err(e)}};
+        const kick=()=>{clearTimeout(tm);tm=setTimeout(run,120)};
+        boot().then(()=>{
+          if(dead)return;run();
+          const ch=sb.channel("c-"+col+"-"+Math.random().toString(36).slice(2))
+            .on("postgres_changes",{event:"*",schema:"public",table:"docs",filter:"col=eq."+col},kick).subscribe();
+          const poll=setInterval(run,15000);
+          o._un=()=>{dead=true;clearInterval(poll);sb.removeChannel(ch)};
+        });
+        return()=>{dead=true;o._un&&o._un()};
+      }
+    };
+    return o;
+  };
+  const docRef=(col,id)=>{
+    id=id||Math.random().toString(36).slice(2)+Date.now().toString(36);
+    const snap=async()=>{
+      const {data}=await sb.from("docs").select("data").eq("col",col).eq("id",id).maybeSingle();
+      return {id,exists:!!data,data:()=>data?j(data.data):undefined};
+    };
+    return {
+      id,
+      set:async v=>{await boot();const {error}=await sb.from("docs").upsert({col,id,data:j(v)});if(error)throw error},
+      update:async v=>{await boot();const s=await snap();const cur=s.exists?s.data():{};const {error}=await sb.from("docs").upsert({col,id,data:Object.assign(cur,j(v))});if(error)throw error},
+      delete:async()=>{await boot();const {error}=await sb.from("docs").delete().eq("col",col).eq("id",id);if(error)throw error},
+      get:async()=>{await boot();return snap()},
+      onSnapshot(cb,err){
+        let dead=false,tm=null,ch=null,poll=null;
+        const run=async()=>{if(dead)return;try{cb(await snap())}catch(e){err&&err(e)}};
+        const kick=()=>{clearTimeout(tm);tm=setTimeout(run,120)};
+        boot().then(()=>{
+          if(dead)return;run();
+          ch=sb.channel("d-"+col+"-"+id+"-"+Math.random().toString(36).slice(2))
+            .on("postgres_changes",{event:"*",schema:"public",table:"docs",filter:"col=eq."+col},p=>{const r=p&&((p.new&&p.new.id!==undefined)?p.new:p.old);if(!r||r.id===undefined||r.id===id)kick()}).subscribe();
+          poll=setInterval(run,15000);
+        });
+        return()=>{dead=true;clearInterval(poll);ch&&sb.removeChannel(ch)};
+      }
+    };
+  };
+  const db={collection:c=>mkq(c),doc:p=>{const i=p.indexOf("/");return docRef(p.slice(0,i),p.slice(i+1))}};
+  window.claude={use:async n=>{
+    if(n==="db"){await boot();return db}
+    if(n==="user"){await boot();return{isOwner:async()=>owner,id:async()=>me,rbxInfo:async()=>{const m=sess&&sess.user&&sess.user.user_metadata;return m&&m.rbx_name?{name:m.rbx_name,id:m.rbx_id}:null},rbxName:async()=>((sess&&sess.user&&sess.user.user_metadata&&sess.user.user_metadata.rbx_name)||"")}}
+    return null;
+  }};
+})();
+</script>
+
+<style>
+#rbxm{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;padding:14px}
+#rbxm.hide{display:none}
+#rbxm .bx{width:min(440px,100%);background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+#rbxm h2{margin:0 0 6px}#rbxm .cd{display:block;margin:10px 0;padding:12px;border-radius:10px;background:var(--deep);border:1px dashed var(--amber);font-weight:700;font-size:17px;user-select:all;word-break:break-word}
+#rbxm .er{color:#ff8a7a;min-height:18px;font-size:13px;margin-top:8px}#rbxm .rw{display:flex;gap:8px;margin-top:12px}#rbxm input{width:100%;box-sizing:border-box}
+#rbxl .btn{padding:8px 14px;font-weight:700}
+#rbxgate{position:fixed;inset:0;z-index:190;display:flex;align-items:center;justify-content:center;padding:20px;background:radial-gradient(700px 400px at 50% 30%,#3a1c0c,#0e0805);text-align:center}
+#rbxgate.hide{display:none}#rbxgate .gb{width:min(420px,100%);padding:28px 22px;border:1px solid var(--line,#2d2118);border-radius:20px;background:var(--panel,#17110c);box-shadow:0 20px 60px rgba(0,0,0,.6)}
+#rbxgate .gl{font-weight:800;font-size:30px;margin-bottom:6px}#rbxgate .gl span{color:#f5b041}#rbxgate p{color:#b8a995;margin:6px 0 20px}#rbxgate button{width:100%;min-height:50px;font-size:16px;font-weight:800}
+</style>
+<script>
+(function(){
+  var sb=window.__sb,cfg=window.__SB;if(!sb||!cfg)return;
+  var ch=null,$=function(i){return document.getElementById(i)};
+  function api(body){return fetch(cfg.url+"/functions/v1/roblox-login",{method:"POST",headers:{"Content-Type":"application/json",apikey:cfg.key,Authorization:"Bearer "+cfg.key},body:JSON.stringify(body)}).then(function(r){return r.json().catch(function(){return{error:"Bad answer from server."}})})}
+  var m=document.createElement("div");m.id="rbxm";m.className="hide";
+  m.innerHTML='<div class="bx"><div id="rs1"><h2>Log in with Roblox</h2><div class="note">Type your Roblox username. You will put a short code in your Roblox About, which proves the account is yours.</div><div class="rw"><input id="rbxu" maxlength="20" placeholder="Roblox username" autocomplete="off"></div><div class="rw"><button class="btn pri" id="rbxg">Continue</button><button class="btn" id="rbxc1">Cancel</button></div></div>'+
+   '<div id="rs2" class="hide"><h2>Add this to your Roblox About</h2><div class="note">1. Copy the code. 2. Open <a id="rbxlk" target="_blank" rel="noopener" style="color:#f5b041">your Roblox profile</a>, press the pencil/Edit and paste it anywhere in <b>About</b>. 3. Save, then press Verify. You can delete it afterwards.</div><span class="cd" id="rbxcode"></span><div class="rw"><button class="btn pri" id="rbxv">Verify</button><button class="btn" id="rbxb">Back</button></div></div><div class="er" id="rbxe"></div></div>';
+  document.body.appendChild(m);
+  var g=document.createElement("div");g.id="rbxgate";g.className="hide";g.innerHTML='<div class="gb"><div class="gl">Bloxy<span>Upgrades</span></div><p>Log in with your Roblox account to play. Your gems and pets are saved to it.</p><button class="btn pri" id="rbxgb">Log in with Roblox</button></div>';document.body.appendChild(g);
+  function er(t){$("rbxe").textContent=t||""}
+  function open(){er();$("rs1").classList.remove("hide");$("rs2").classList.add("hide");m.classList.remove("hide");setTimeout(function(){$("rbxu").focus()},50)}
+  function close(){m.classList.add("hide")}
+  m.addEventListener("click",function(e){if(e.target===m)close()});
+  $("rbxc1").onclick=close;$("rbxb").onclick=function(){er();$("rs2").classList.add("hide");$("rs1").classList.remove("hide")};
+  $("rbxg").onclick=async function(){er();var u=$("rbxu").value.trim();if(!/^[A-Za-z0-9_]{3,20}$/.test(u)){er("Enter a valid Roblox username.");return}
+    $("rbxg").disabled=true;var r=await api({action:"start",username:u});$("rbxg").disabled=false;
+    if(r.error){er(r.error);return}ch=r;$("rbxcode").textContent=r.code;$("rbxlk").href="https://www.roblox.com/users/"+r.id+"/profile";$("rs1").classList.add("hide");$("rs2").classList.remove("hide")};
+  $("rbxv").onclick=async function(){er();if(!ch)return;$("rbxv").disabled=true;$("rbxv").textContent="Checking...";
+    var r=await api({action:"verify",token:ch.token});
+    if(r.error||!r.token_hash){$("rbxv").disabled=false;$("rbxv").textContent="Verify";er(r.error||"Could not verify.");return}
+    var v=await sb.auth.verifyOtp({token_hash:r.token_hash,type:"magiclink"});
+    if(v.error){$("rbxv").disabled=false;$("rbxv").textContent="Verify";er("Sign-in failed. Try again.");return}
+    location.reload()};
+  async function draw(){var s=(await sb.auth.getSession()).data.session,md=s&&s.user&&s.user.user_metadata,nm=md&&md.rbx_name,e=$("rbxl");if(!e)return;
+    window.__rbxOut=nm?async function(){await sb.auth.signOut();location.reload()}:null;try{if(window.drawSig)drawSig()}catch(x){}
+    e.innerHTML=nm?'':'<button class="btn pri" id="rbxi">Log in with Roblox</button>';
+    g.classList.toggle("hide",!!nm);$("rbxgb").onclick=open;var i=$("rbxi");if(i)i.onclick=open;var o=$("rbxo");if(o)o.onclick=async function(){await sb.auth.signOut();location.reload()}}
+  draw();
+})();
+</script>
+
 <script>
 const fresh=()=>({name:"Player",gems:0,inv:{},hist:[],won:0,xp:0,taken:{},pool:null,lostC:{},lostD:{},hg:0,lib:null,applied:{}});
 let S=fresh();try{const s=localStorage.getItem("pu2");if(s)S=Object.assign(fresh(),JSON.parse(s))}catch(e){}
