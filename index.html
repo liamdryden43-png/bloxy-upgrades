@@ -836,7 +836,7 @@ document.addEventListener("click",e=>{if(!e.target.closest("#gpet,#gpl")){const 
 function gSend(){if(!DB){say("Needs the live connection.");return}const id=$("gto").value,g=Math.floor(pv($("ggem").value)||0);if(!id||!(g>0)){say("Pick a player and type how many gems.");return}DB.doc("gifts/"+Date.now()+"-"+Math.random().toString(36).slice(2,6)).set({to:id,t:Date.now(),gems:g}).then(()=>{say("Sent "+fmt(g)+" gems.");$("ggem").value=""}).catch(()=>say("Could not send."))}
 function gPets(){const s=$("gto");if(!s||!s.value){say("Pick a player first.");return}const m=$("gpm");m.style.display="flex";m.classList.remove("hide");m.innerHTML='<div style="background:var(--panel,#1c0f10);border:1px solid var(--line);border-radius:14px;width:min(560px,100%);max-height:86vh;display:flex;flex-direction:column;padding:14px;gap:10px"><div class="row" style="align-items:center;justify-content:space-between"><b>Gift a pet to '+esc(s.options[s.selectedIndex].text)+'</b><button class="btn" onclick="gPetsX()">Close</button></div><div class="row"><input id="gps" placeholder="Search a pet name…" oninput="gPetsL()" style="flex:1" autocomplete="off"><input id="gpq" value="1" style="width:60px" title="How many"></div><div id="gpr" style="overflow:auto;display:flex;flex-direction:column;gap:6px"></div></div>';gPetsL();setTimeout(()=>{const e=$("gps");if(e)e.focus()},50)}
 function gPetsX(){const m=$("gpm");m.style.display="none";m.classList.add("hide")}
-function gPetsL(){const q=($("gps").value||"").trim().toLowerCase(),seen=new Set(),L=[];for(const p of P.concat(LIB)){if(seen.has(p.n)||!p.n.toLowerCase().includes(q))continue;seen.add(p.n);if(!p.img&&PIC[p.n])p=Object.assign({},p,{img:PIC[p.n]});L.push(p)}L.sort((a,b)=>(b.v||0)-(a.v||0));$("gpr").innerHTML=L.slice(0,60).map(p=>`<div class="ar" data-n="${esc(p.n)}" onclick="gPet(this.dataset.n)" style="cursor:pointer"><span>${ic(p,40)}</span><span class="n">${esc(p.n)} <small class="tag">${fmt(p.v||0)}</small></span><button class="btn pri">Gift</button></div>`).join("")||'<div class="note">No pets found.</div>'}
+function gPetsL(){const q=($("gps").value||"").trim().toLowerCase(),seen=new Set(),L=[];for(const p0 of P.concat(LIB)){if(seen.has(p0.n)||!p0.n.toLowerCase().includes(q))continue;seen.add(p0.n);let p=p0;if(!p.img&&PIC[p.n])p=Object.assign({},p,{img:PIC[p.n]});L.push(p)}L.sort((a,b)=>(b.v||0)-(a.v||0));$("gpr").innerHTML=L.slice(0,60).map(p=>`<div class="ar" data-n="${esc(p.n)}" onclick="gPet(this.dataset.n)" style="cursor:pointer"><span>${ic(p,40)}</span><span class="n">${esc(p.n)} <small class="tag">${fmt(p.v||0)}</small></span><button class="btn pri">Gift</button></div>`).join("")||'<div class="note">No pets found.</div>'}
 function gPet(n){if(!DB){say("Needs the live connection.");return}const id=$("gto").value,p=gFind(n),q=Math.max(1,parseInt($("gpq").value)||1);if(!id||!p)return;DB.doc("gifts/"+Date.now()+"-"+Math.random().toString(36).slice(2,6)).set({to:id,t:Date.now(),pet:{n:p.n,e:p.e||"",v:p.v||0,img:p.img&&p.img.length<4000?p.img:""},qty:q}).then(()=>say("Gifted "+q+"x "+p.n+" to "+$("gto").options[$("gto").selectedIndex].text+".")).catch(()=>say("Could not send."))}
 var GIFT=null;
 function giftMode(){const s=$("gto");if(!s||!s.value){say("Pick a player first.");return}GIFT={to:s.value,name:s.options[s.selectedIndex].text};tab("lib");drawLib()}
@@ -1019,11 +1019,19 @@ function vgDraw(im,v){const z=128,c=document.createElement("canvas");c.width=c.h
  if(v.includes("Shiny")){x.fillStyle="#fff";x.shadowColor="#fff";x.shadowBlur=10;[[.24,.24,15],[.76,.32,11],[.5,.76,13],[.18,.7,8],[.86,.82,9]].forEach(a=>vgStar(x,a[0]*z,a[1]*z,a[2]))}
  return c.toDataURL("image/jpeg",.88)}
 function vgBase(b){const k=nk(b);let s=PIC[b]||"";if(s)return s;const L=[LIB,P,Object.values(S.cu||{})];for(const a of L){const f=a.find(p=>p&&(p.n==b||nk(p.n)==k)&&p.img);if(f)return f.img}try{if(LD&&LD[b]&&LD[b].img)return LD[b].img}catch(e){}const pk=Object.keys(PIC).find(x=>nk(x)==k&&!GEN.has(x));return pk?PIC[pk]:""}
-async function varGen(){try{const names=new Set(LIB.map(p=>p.n).concat(P.map(p=>p.n),Object.keys(S.inv||{}),Object.keys(S.cu||{}),(typeof LOST!="undefined"?Object.keys(LOST):[])));let ch=0;
- for(const n of names){const v=VSX.find(y=>n.startsWith(y+" "));if(!v)continue;if(PIC[n]&&!GEN.has(n))continue;if([LIB,P].some(a=>a.some(p=>p.n==n&&p.img)))continue;
-  const b=n.slice(v.length+1),src=vgBase(b);if(!src||GEN.get(n)===src.length)continue;
-  const im=await vgImg(src);if(!im)continue;PIC[n]=vgDraw(im,v);GEN.set(n,src.length);ch++}
- if(ch){try{drawLib()}catch(e){}try{redraw()}catch(e){}try{wGrid()}catch(e){}}}catch(e){}}
+var VGB=0;
+async function varGen(){if(VGB)return;VGB=1;try{const names=new Set(P.map(p=>p.n).concat(Object.keys(S.inv||{}),Object.keys(S.cu||{}),(typeof LOST!="undefined"?Object.keys(LOST):[]),LIB.map(p=>p.n)));
+ const own=new Map();for(const a of [LIB,P,Object.values(S.cu||{})])for(const p of a)if(p&&p.img&&!own.has(p.n))own.set(p.n,p.img);
+ const bm=new Map();for(const k of Object.keys(PIC)){if(GEN.has(k)||VSX.some(y=>k.startsWith(y+" ")))continue;const q=nk(k);if(!bm.has(q))bm.set(q,PIC[k])}
+ for(const [n,im] of own){const q=nk(n);if(!VSX.some(y=>n.startsWith(y+" "))&&!bm.has(q))bm.set(q,im)}
+ const dc=new Map();let ch=0,k2=0;
+ for(const n of names){const v=VSX.find(y=>n.startsWith(y+" "));if(!v)continue;if(PIC[n]&&!GEN.has(n))continue;if(own.has(n))continue;
+  const b=n.slice(v.length+1);let src=PIC[b]||own.get(b)||bm.get(nk(b))||((LD&&LD[b]&&LD[b].img)||"");if(!src||GEN.get(n)===src.length)continue;
+  let im=dc.get(src);if(im===undefined){im=await vgImg(src);dc.set(src,im);if(dc.size>40)dc.delete(dc.keys().next().value)}if(!im)continue;
+  PIC[n]=vgDraw(im,v);GEN.set(n,src.length);ch++;k2++;
+  if(k2%20==0)await new Promise(r=>setTimeout(r,0));
+  if(ch%400==0){try{drawLib()}catch(e){}try{redraw()}catch(e){}}}
+ if(ch){try{drawLib()}catch(e){}try{redraw()}catch(e){}try{wGrid()}catch(e){}}}catch(e){}VGB=0}
 picLoad();
 const TIERS=[{n:"Newcomer",w:0,c:"#9fb4d8"},{n:"High Roller",w:5e8,c:"#e0505f"},{n:"Whale",w:24.86e9,c:"#3d7be0"},{n:"King",w:19.38e12,c:"#f0a62a"}];
 const rank=()=>{let t=TIERS[0];for(const x of TIERS)if((S.wag||0)>=x.w)t=x;return t};
