@@ -1410,4 +1410,65 @@ async function perk(id,on){try{on?await DB.doc("perks/"+id).set({stream:true}):a
 window.addEventListener("error",e=>say("Page error: "+e.message));
 window.addEventListener("unhandledrejection",e=>say("Page error: "+((e.reason&&(e.reason.message||e.reason.code))||e.reason)));
 init();
-</script></body></html>
+</script><style id="mobcss">
+#mbtn,#mdr,#mbd{display:none}
+@media(max-width:1000px){
+header{display:flex!important;flex-wrap:nowrap!important;align-items:center;justify-content:space-between;gap:8px;padding:10px max(14px,env(safe-area-inset-right,0px)) 10px max(14px,env(safe-area-inset-left,0px))!important}
+header .logo{font-size:20px!important;white-space:nowrap;flex:none}
+header>div:last-child{flex-wrap:nowrap!important;gap:8px!important;min-width:0}
+#ring{display:none!important}#rbxi{white-space:nowrap;font-size:13px!important;padding:8px 10px!important}.hprof .pav{margin:0!important}.wbx{flex:none}
+.hsea{font-size:0!important;width:42px;height:42px;padding:0!important;display:inline-flex;align-items:center;justify-content:center;border-radius:12px!important}
+.hsea::before{content:"🍂";font-size:20px}
+.hprof b,.hprof .chv:not(:last-child){display:none!important}
+.hprof{padding:4px 8px!important;gap:6px!important}
+.wbr{display:none!important}
+.wbl{padding:0 10px!important}
+#nav{display:none!important}
+#mbtn,#lco2{display:flex!important;position:fixed!important;bottom:calc(20px + env(safe-area-inset-bottom,0px))!important;top:auto!important;width:54px!important;height:54px!important;padding:0!important;align-items:center;justify-content:center;border-radius:16px!important;background:#1d150f!important;border:1px solid #3a2a1c!important;color:#f3e6d6!important;font-size:0!important;writing-mode:horizontal-tb!important;transform:none!important;box-shadow:0 6px 20px rgba(0,0,0,.5)!important;z-index:60!important;cursor:pointer}
+#mbtn{left:max(14px,env(safe-area-inset-left,0px));right:auto}
+#lco2{right:max(14px,env(safe-area-inset-right,0px))!important;left:auto!important}
+#lco2::before{content:"";width:26px;height:26px;background:no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f3e6d6' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 5h16v11H9l-5 4z'/%3E%3C/svg%3E")}
+#mbtn svg{width:26px;height:26px}
+body.mopen #mbtn,body.mopen #lco2{display:none!important}
+#mbd{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:96}
+#mdr{position:fixed;top:0;bottom:0;left:0;width:min(82vw,340px);background:#17110d;border-right:1px solid #2d2118;z-index:97;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:calc(14px + env(safe-area-inset-top,0px)) 12px calc(20px + env(safe-area-inset-bottom,0px)) 12px;flex-direction:column;gap:2px;box-shadow:10px 0 40px rgba(0,0,0,.6)}
+body.mopen #mbd,body.mopen #mdr{display:flex}
+body.mopen{overflow:hidden}
+#mdr .mtop{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;padding:0 4px}
+#mdr .mtop b{font-size:17px}
+#mdr .mx{width:40px;height:40px;border-radius:50%;border:1px solid #3a2a1c;background:#1d150f;color:#cdb9a3;font-size:18px}
+#mdr h6{margin:14px 6px 6px;font-size:12px;letter-spacing:.14em;color:#9b8670;border-top:1px solid #2d2118;padding-top:14px}
+#mdr h6:first-of-type{border:0;padding-top:0}
+#mdr .mi{display:flex;align-items:center;gap:16px;width:100%;text-align:left;padding:13px 14px;border-radius:12px;border:0;border-left:3px solid transparent;background:none;color:#e9dccd;font-size:16px;font-weight:600;cursor:pointer}
+#mdr .mi svg{width:24px;height:24px;flex:none;stroke:#cdb9a3;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+#mdr .mi.on{background:#2c2015;border-left-color:#e8923c;color:#fff}
+#p-home .gcs{grid-template-columns:1fr 1fr!important;gap:12px!important}
+#p-home button.gc{height:170px!important;border-radius:20px!important}
+#p-home button.gc b{font-size:21px!important}
+#p-home button.gc small{font-size:11px}
+#p-home button.gc::after{left:12px!important;bottom:12px!important;padding:5px 12px!important;font-size:11px!important}
+#p-home button.gc svg{max-width:62%}
+#p-home .gpe{left:auto!important;right:8px!important;width:48px!important;height:48px!important}
+#app{padding-bottom:90px}
+}
+</style>
+<script>
+(function(){
+const I={home:'<path d="M4 11l8-7 8 7v9H4z"/><path d="M10 20v-6h4v6"/>',cd:'<rect x="4" y="9" width="11" height="11" rx="2"/><path d="M9 9l4-5 7 3-2 6"/><circle cx="8" cy="13" r=".8"/><circle cx="11" cy="16" r=".8"/>',coin:'<circle cx="9" cy="14" r="6"/><circle cx="15" cy="9" r="6"/>',up:'<path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/>',mines:'<circle cx="11" cy="14" r="7"/><path d="M15 8l3-3m1-2v3m2 0h-3"/>',tow:'<rect x="5" y="4" width="14" height="4" rx="1"/><rect x="5" y="10" width="14" height="4" rx="1"/><rect x="5" y="16" width="14" height="4" rx="1"/>',egg:'<path d="M12 3c4 0 7 6 7 11a7 7 0 0 1-14 0c0-5 3-11 7-11z"/>',chat:'<path d="M4 5h16v11H9l-5 4z"/>'};
+const G=[["n-home","Home","home"],["n-cd","Color Dice Duels","cd"],["n-coin","Coinflip","coin"],["n-up","Upgrader","up"],["n-mines","Mines","mines"],["n-tow","Towers","tow"],["n-egg","Egg Hatch","egg"]];
+function build(){
+ if(document.getElementById("mdr"))return;
+ const svg=k=>'<svg viewBox="0 0 24 24">'+I[k]+'</svg>';
+ const b=document.createElement("button");b.id="mbtn";b.setAttribute("aria-label","Menu");b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="#f3e6d6" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>';
+ const bd=document.createElement("div");bd.id="mbd";
+ const d=document.createElement("div");d.id="mdr";
+ d.innerHTML='<div class="mtop"><b>Menu</b><button class="mx" aria-label="Close">✕</button></div><h6>GAMES</h6>'+G.map(g=>'<button class="mi" data-n="'+g[0]+'">'+svg(g[2])+g[1]+'</button>').join("")+'<h6>COMMUNITY</h6><button class="mi" data-chat="1">'+svg("chat")+'Live Chat</button>';
+ document.body.append(b,bd,d);
+ const open=()=>{G.forEach(g=>{const n=document.getElementById(g[0]);d.querySelector('[data-n="'+g[0]+'"]').classList.toggle("on",!!(n&&n.classList.contains("on")))});document.body.classList.add("mopen")},close=()=>document.body.classList.remove("mopen");
+ b.onclick=open;bd.onclick=close;d.querySelector(".mx").onclick=close;
+ d.addEventListener("click",e=>{const t=e.target.closest(".mi");if(!t)return;close();if(t.dataset.chat){try{lcFold()}catch(x){}return}const n=document.getElementById(t.dataset.n);if(n)n.click();try{window.scrollTo(0,0)}catch(x){}});
+}
+if(document.readyState!="loading")build();else document.addEventListener("DOMContentLoaded",build);
+})();
+</script>
+</body></html>
