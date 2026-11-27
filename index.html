@@ -411,10 +411,22 @@ const SB_URL=(window.SB_CONFIG||{}).url||"PASTE", SB_KEY=(window.SB_CONFIG||{}).
   const hdr=()=>({"Content-Type":"application/json",Authorization:"Bearer "+(tok||"")});
   const j=v=>JSON.parse(JSON.stringify(v));
   const boot=()=>ready||(ready=(async()=>{
-    for(let i=0;i<2;i++){
-      if(tok){try{const r=await fetch(API+"/me",{headers:hdr()});if(r.ok){const d=await r.json();me=d.uid;owner=!!d.owner;rbx=d.rbx||null;break}if(r.status===401){tok=null;lsd(TK)}}catch(e){break}}
-      if(!tok){try{const r=await fetch(API+"/auth/anon",{method:"POST"});const d=await r.json();tok=d.token;me=d.uid;lss(TK,tok);owner=false;rbx=null;break}catch(e){break}}
+    const t0=tok;
+    if(tok){
+      let dead=false;
+      for(let i=0;i<4&&!dead;i++){
+        try{const r=await fetch(API+"/me",{headers:hdr()});
+          if(r.ok){const d=await r.json();me=d.uid;owner=!!d.owner;rbx=d.rbx||null;lss("bu_me",JSON.stringify({uid:me,owner:owner,rbx:rbx,t:tok.slice(-16)}));break}
+          if(r.status===401){dead=true;break}
+        }catch(e){}
+        await new Promise(r=>setTimeout(r,600*(i+1)));
+      }
+      if(dead){tok=null;lsd(TK);lsd("bu_me")}
+      else if(!me){ /* server unreachable: keep the saved login instead of logging out */
+        try{const c=JSON.parse(lsg("bu_me")||"null");if(c&&c.uid&&c.t===tok.slice(-16)){me=c.uid;owner=!!c.owner;rbx=c.rbx||null}}catch(e){}
+      }
     }
+    if(!tok){try{const r=await fetch(API+"/auth/anon",{method:"POST"});const d=await r.json();if(!tok){tok=d.token;me=d.uid;lss(TK,tok);owner=false;rbx=null}}catch(e){}}
     window.whoami=()=>me;
     startSync();
   })());
@@ -542,8 +554,8 @@ const SB_URL=(window.SB_CONFIG||{}).url||"PASTE", SB_KEY=(window.SB_CONFIG||{}).
     },
     auth:{
       getSession:async()=>{await boot();return{data:{session:me?{user:{id:me,user_metadata:rbx?{rbx_id:rbx.id,rbx_name:rbx.name}:{}}}:null}}},
-      verifyOtp:async o=>{if(!o||!o.token_hash)return{error:{message:"no token"}};lss(TK,o.token_hash);tok=o.token_hash;return{error:null}},
-      signOut:async()=>{lsd(TK);tok=null;return{error:null}}
+      verifyOtp:async o=>{if(!o||!o.token_hash)return{error:{message:"no token"}};lss(TK,o.token_hash);tok=o.token_hash;lsd("bu_me");return{error:null}},
+      signOut:async()=>{lsd(TK);lsd("bu_me");tok=null;return{error:null}}
     }
   };
   window.claude={use:async n=>{
