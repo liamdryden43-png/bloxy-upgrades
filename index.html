@@ -1416,7 +1416,7 @@ init();
 header{display:flex!important;flex-wrap:nowrap!important;align-items:center;justify-content:space-between;gap:8px;padding:10px max(14px,env(safe-area-inset-right,0px)) 10px max(14px,env(safe-area-inset-left,0px))!important}
 header .logo{font-size:20px!important;white-space:nowrap;flex:none}
 header>div:last-child{flex-wrap:nowrap!important;gap:8px!important;min-width:0}
-#ring{display:none!important}#rbxi{white-space:nowrap;font-size:13px!important;padding:8px 10px!important}.hprof .pav{margin:0!important}.wbx{flex:none}
+#ring{display:none!important}.umenu{left:auto!important;right:0!important;min-width:min(260px,calc(100vw - 28px))!important}#mdr .mlv{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:12px 14px;margin-bottom:6px;border-radius:14px;border:1px solid #3a2a1c;background:#1d150f;color:#f3e6d6;cursor:pointer}#mdr .mlv .mh{width:34px;height:34px;flex:none;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);background:#9fb4d8}#mdr .mlv b{display:block;font-size:15px}#mdr .mlv small{display:block;color:#9b8670;font-size:12px;margin-top:2px}#mdr .mlv .mb{height:5px;border-radius:3px;background:#2d2118;margin-top:6px;overflow:hidden}#mdr .mlv .mb i{display:block;height:100%;background:#e8923c}#rbxi{white-space:nowrap;font-size:13px!important;padding:8px 10px!important}.hprof .pav{margin:0!important}.wbx{flex:none}
 .hsea{font-size:0!important;width:42px;height:42px;padding:0!important;display:inline-flex;align-items:center;justify-content:center;border-radius:12px!important}
 .hsea::before{content:"🍂";font-size:20px}
 .hprof b,.hprof .chv:not(:last-child){display:none!important}
@@ -1462,11 +1462,11 @@ function build(){
  const b=document.createElement("button");b.id="mbtn";b.setAttribute("aria-label","Menu");b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="#f3e6d6" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>';
  const bd=document.createElement("div");bd.id="mbd";
  const d=document.createElement("div");d.id="mdr";
- d.innerHTML='<div class="mtop"><b>Menu</b><button class="mx" aria-label="Close">✕</button></div><h6>GAMES</h6>'+G.map(g=>'<button class="mi" data-n="'+g[0]+'">'+svg(g[2])+g[1]+'</button>').join("")+'<h6>COMMUNITY</h6><button class="mi" data-chat="1">'+svg("chat")+'Live Chat</button>';
+ d.innerHTML='<div class="mtop"><b>Menu</b><button class="mx" aria-label="Close">✕</button></div><button class="mlv" data-lv="1"><span class="mh"></span><span style="flex:1;min-width:0"><b class="mlt">Level</b><small>Tap to see your level</small><span class="mb"><i style="width:0%"></i></span></span></button><h6>GAMES</h6>'+G.map(g=>'<button class="mi" data-n="'+g[0]+'">'+svg(g[2])+g[1]+'</button>').join("")+'<h6>COMMUNITY</h6><button class="mi" data-chat="1">'+svg("chat")+'Live Chat</button>';
  document.body.append(b,bd,d);
- const open=()=>{G.forEach(g=>{const n=document.getElementById(g[0]);d.querySelector('[data-n="'+g[0]+'"]').classList.toggle("on",!!(n&&n.classList.contains("on")))});document.body.classList.add("mopen")},close=()=>document.body.classList.remove("mopen");
+ const open=()=>{try{const t=document.querySelector("#ring .hxt b"),w=document.querySelector("#ring .hbar i"),h=document.querySelector("#ring .hexa"),l=d.querySelector(".mlv");if(t)l.querySelector(".mlt").textContent=t.textContent;if(w)l.querySelector(".mb i").style.width=w.style.width;if(h)l.querySelector(".mh").style.background=h.style.background||"#9fb4d8"}catch(x){}G.forEach(g=>{const n=document.getElementById(g[0]);d.querySelector('[data-n="'+g[0]+'"]').classList.toggle("on",!!(n&&n.classList.contains("on")))});document.body.classList.add("mopen")},close=()=>document.body.classList.remove("mopen");
  b.onclick=open;bd.onclick=close;d.querySelector(".mx").onclick=close;
- d.addEventListener("click",e=>{const t=e.target.closest(".mi");if(!t)return;close();if(t.dataset.chat){try{lcFold()}catch(x){}return}const n=document.getElementById(t.dataset.n);if(n)n.click();try{window.scrollTo(0,0)}catch(x){}});
+ d.addEventListener("click",e=>{if(e.target.closest(".mlv")){close();try{lvOpen()}catch(x){}return}const t=e.target.closest(".mi");if(!t)return;close();if(t.dataset.chat){try{lcFold()}catch(x){}return}const n=document.getElementById(t.dataset.n);if(n)n.click();try{window.scrollTo(0,0)}catch(x){}});
 }
 if(document.readyState!="loading")build();else document.addEventListener("DOMContentLoaded",build);
 })();
