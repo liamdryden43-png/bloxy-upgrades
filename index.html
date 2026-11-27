@@ -823,7 +823,7 @@ async function clearAll(){P=[];S.pool=null;await savePool();LOST={};LD={};S.lost
 var BK={t:"dep",k:"pets",items:{},bot:"",all:[],err:"",done:null,seen:null};
 const rqKey=r=>r.type=="dep"?"dp":"wd";
 var RGONE=new Set();function rqN(k){return BK.all.filter(r=>r.st=="pending"&&rqKey(r)==k&&!RGONE.has(r.id)).length}
-function rqWhat(r){const a=[];if(r.gems)a.push(fmt(r.gems)+" gems");Object.entries(r.items||{}).forEach(([n,q])=>a.push(q+"x "+n));return a.join(", ")||"nothing"}
+function rqWhat(r){if(r.type=="dep"&&!r.gems&&!Object.keys(r.items||{}).length)return"Deposit (items traded to the bot)";const a=[];if(r.gems)a.push(fmt(r.gems)+" gems");Object.entries(r.items||{}).forEach(([n,q])=>a.push(q+"x "+n));return a.join(", ")||"nothing"}
 function bkInit(){
   try{
     if(OWN)DB.collection("requests").onSnapshot(q=>bkSet(q.docs.map(d=>Object.assign({id:d.id},d.data()))),()=>{});
@@ -847,28 +847,29 @@ function bkAdd(){const n=$("bkn").value.trim(),q=Math.max(1,Math.floor(+$("bkq")
 function bkDel(n){delete BK.items[n];bkDraw()}
 function bkWd(n,v){const q=Math.max(0,Math.min(S.inv[n]||0,Math.floor(+v||0)));if(q)BK.items[n]=q;else delete BK.items[n]}
 function bkBox(){const b=BK.bot;
-  return b?`<div class="botb">Join this bot in <b>Pet Simulator 99</b>:<br><b>${esc(b)}</b> · <a href="https://www.roblox.com/user.aspx?username=${encodeURIComponent(b)}" target="_blank" rel="noopener" style="color:var(--amber)">Roblox profile ↗</a><div class="note">${BK.t=="dep"?"Trade it what you listed above, then press the button below so the owner can confirm and credit you.":"Press the button below. The owner sends your items to you in-game when you join the bot."}</div></div>`
+  return b?`<div class="botb">Join this bot in <b>Pet Simulator 99</b>:<br><b>${esc(b)}</b> · <a href="https://www.roblox.com/user.aspx?username=${encodeURIComponent(b)}" target="_blank" rel="noopener" style="color:var(--amber)">Roblox profile ↗</a><div class="note">${BK.t=="dep"?"Trade it the pets or gems you want to deposit, then press the button below so the owner can confirm and credit you.":"Press the button below. The owner sends your items to you in-game when you join the bot."}</div></div>`
    :`<div class="botb">The bot is not set up yet. Ask the owner for the bot name.</div>`}
 function bkDraw(){const m=$("bkm");if(!m)return;const dep=BK.t=="dep",T=dep?"Deposit":"Withdraw",mine=BK.all.filter(r=>r.uid==UID&&r.type==BK.t&&!(r.st=="done"&&Date.now()-(r.dt||r.t||0)>6e5)).slice(0,5);
   let body="";
   if(BK.done){body=`<div class="botb"><b>Request sent ✔</b><div class="note">${esc(BK.done)}</div></div>${bkBox()}<div class="rw"><button class="btn pri" onclick="bkOpen('${BK.t}')">New ${T.toLowerCase()}</button><button class="btn" onclick="bkClose()">Close</button></div>`}
   else{
-    body=`<div class="kd"><button class="btn ${BK.k=="pets"?"pri":""}" onclick="bkKind('pets')">🐾 Pets</button><button class="btn ${BK.k=="gems"?"pri":""}" onclick="bkKind('gems')">💎 Gems</button></div>`;
-    if(BK.k=="gems"){body+=`<div class="note">${dep?"How many gems will you deposit?":"You have "+fmt(S.gems)+" gems."}</div><div class="rw"><input id="bkg" type="text" autocomplete="off" placeholder="Gems amount (like 25m or 1b)"></div>`}
+    body=dep?"":`<div class="kd"><button class="btn ${BK.k=="pets"?"pri":""}" onclick="bkKind('pets')">🐾 Pets</button><button class="btn ${BK.k=="gems"?"pri":""}" onclick="bkKind('gems')">💎 Gems</button></div>`;
+    if(dep){}
+    else if(BK.k=="gems"){body+=`<div class="note">${dep?"How many gems will you deposit?":"You have "+fmt(S.gems)+" gems."}</div><div class="rw"><input id="bkg" type="text" autocomplete="off" placeholder="Gems amount (like 25m or 1b)"></div>`}
     else if(dep){body+=`<div class="note">Which pets will you deposit?</div><div class="rw"><input id="bkn" list="bkdl" placeholder="Pet name" autocomplete="off"><input id="bkq" type="number" min="1" value="1" style="width:80px"><button class="btn pri" style="flex:0 0 70px" onclick="bkAdd()">Add</button></div><datalist id="bkdl">${LIB.map(p=>`<option value="${esc(p.n)}">`).join("")}</datalist>`+Object.entries(BK.items).map(([n,q])=>`<div class="it2"><span>${esc(n)}</span><b>x${q}</b><button class="btn" style="padding:4px 10px" onclick="bkDel('${esc(n).replace(/'/g,"\\'")}')">✕</button></div>`).join("")}
     else{const L=Object.entries(S.inv).filter(([n,c])=>c>0);body+=L.length?`<div class="note">Type how many of each pet to withdraw.</div>`+L.map(([n,c])=>`<div class="it2" title="${esc(n)}"><span class="wdi">${ic(Object.assign({},find(n),{img:PIC[n]||find(n).img||"",n}),48)}</span><em class="tag">${c}x</em><input type="number" min="0" max="${c}" value="${BK.items[n]||0}" onchange="bkWd('${esc(n).replace(/'/g,"\\'")}',this.value)"></div>`).join(""):`<div class="note">You have no pets to withdraw.</div>`}
-    body+=`<div class="er">${esc(BK.err)}</div>${dep?"":bkBox()}<div class="rw"><button class="btn pri" style="flex:1" onclick="bkGo()">${dep?"I'm depositing - send request":"Withdraw - send request"}</button></div>`}
+    body+=`<div class="er">${esc(BK.err)}</div>${bkBox()}<div class="rw"><button class="btn pri" style="flex:1" onclick="bkGo()">${dep?"I'm depositing - send request":"Withdraw - send request"}</button></div>`}
   if(mine.length)body+=`<h3 style="margin-top:14px">Your recent ${dep?"deposits":"withdrawals"}</h3>`+mine.map(r=>`<div class="rqr"><span class="n">${esc(rqWhat(r))}</span><span class="chip ${r.st=="done"?"ok":r.st=="declined"?"no":"pe"}">${r.st=="done"?"Done":r.st=="declined"?(dep?"Declined":"Declined, refunded"):"Join the bot's server"}</span></div>`).join("");
   m.innerHTML=`<div class="bx" onclick="event.stopPropagation()"><div class="hd"><h2>${T}</h2><button class="btn" style="flex:0 0 36px;padding:4px 0" onclick="bkClose()" aria-label="Close">✕</button></div>${body}</div>`}
 async function bkGo(){if(!alock("bk",2500))return;const dep=BK.t=="dep";let g=0,items={};if(!dep&&STRM()){BK.err="Withdrawals are turned off for streamer accounts.";bkDraw();return}
   if(!DB||!UID){BK.err="Deposits and withdrawals only work on the live site.";bkDraw();return}
-  if(BK.k=="gems"){g=pv($("bkg").value);if(!(g>0)){BK.err="Type a gems amount first.";bkDraw();return}if(!dep&&g>S.gems){BK.err="You only have "+fmt(S.gems)+" gems.";bkDraw();return}}
-  else{items=Object.assign({},BK.items);if(!Object.keys(items).length){BK.err=dep?"Add at least one pet.":"Choose at least one pet.";bkDraw();return}
+  if(dep){}else if(BK.k=="gems"){g=pv($("bkg").value);if(!(g>0)){BK.err="Type a gems amount first.";bkDraw();return}if(!dep&&g>S.gems){BK.err="You only have "+fmt(S.gems)+" gems.";bkDraw();return}}
+  else{items=Object.assign({},BK.items);if(!Object.keys(items).length){BK.err="Choose at least one pet.";bkDraw();return}
     if(!dep){for(const [n,q] of Object.entries(items))if((S.inv[n]||0)<q){BK.err="You do not have that many "+n+".";bkDraw();return}}}
   if(!dep){S.gems-=g;for(const [n,q] of Object.entries(items))S.inv[n]=Math.max((S.inv[n]||0)-q,0);save();upd()}
   const id=Date.now()+Math.random().toString(36).slice(2,6),rq={t:Date.now(),uid:UID,name:S.name||"Player",type:BK.t,kind:BK.k,gems:g,items,st:"pending"};
   try{await DB.doc("requests/"+id).set(rq)}catch(e){if(!dep){S.gems+=g;for(const [n,q] of Object.entries(items))S.inv[n]=(S.inv[n]||0)+q;save();upd()}BK.err="Could not send the request. Try again.";bkDraw();return}
-  BK.done=dep?"The owner will credit "+rqWhat(rq)+" once the bot confirms your trade.":rqWhat(rq)+" has been taken from your balance. The owner will send it to you in-game.";bkDraw()}
+  BK.done=dep?"The owner will credit your deposit once the bot confirms your trade.":rqWhat(rq)+" has been taken from your balance. The owner will send it to you in-game.";bkDraw()}
 async function rqGive(r){let i=0;const t=Date.now();
   if(r.gems)await DB.doc("gifts/rq-"+r.id+"-g").set({t,to:r.uid,gems:r.gems});
   for(const [n,q] of Object.entries(r.items||{})){const p=find(n);await DB.doc("gifts/rq-"+r.id+"-"+(i++)).set({t,to:r.uid,pet:p,qty:q})}}
