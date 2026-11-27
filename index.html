@@ -730,7 +730,7 @@ async function clearAll(){P=[];S.pool=null;await savePool();LOST={};LD={};S.lost
 
 var BK={t:"dep",k:"pets",items:{},bot:"",all:[],err:"",done:null,seen:null};
 const rqKey=r=>r.type=="dep"?"dp":"wd";
-function rqN(k){return BK.all.filter(r=>r.st=="pending"&&rqKey(r)==k).length}
+var RGONE=new Set();function rqN(k){return BK.all.filter(r=>r.st=="pending"&&rqKey(r)==k&&!RGONE.has(r.id)).length}
 function rqWhat(r){const a=[];if(r.gems)a.push(fmt(r.gems)+" gems");Object.entries(r.items||{}).forEach(([n,q])=>a.push(q+"x "+n));return a.join(", ")||"nothing"}
 function bkInit(){
   try{
@@ -780,14 +780,14 @@ async function bkGo(){const dep=BK.t=="dep";let g=0,items={};
 async function rqGive(r){let i=0;const t=Date.now();
   if(r.gems)await DB.doc("gifts/rq-"+r.id+"-g").set({t,to:r.uid,gems:r.gems});
   for(const [n,q] of Object.entries(r.items||{})){const p=find(n);await DB.doc("gifts/rq-"+r.id+"-"+(i++)).set({t,to:r.uid,pet:p,qty:q})}}
-async function rqAct(id,a){const r=BK.all.find(x=>x.id==id);if(!r||r.st!="pending")return;
+async function rqAct(id,a){const r=BK.all.find(x=>x.id==id);if(!r||r.st!="pending"||RGONE.has(id))return;if(a=="no"){RGONE.add(id);try{drawRq();if(typeof drawAdT=="function")drawAdT()}catch(e){}}
   try{if((r.type=="dep"&&a=="ok")||(r.type=="wd"&&a=="no"))await rqGive(r);
     const o=Object.assign({},r);delete o.id;o.st=a=="ok"?"done":"declined";o.dt=Date.now();await DB.doc("requests/"+id).set(o);
     say(a=="ok"?(r.type=="dep"?"Credited "+rqWhat(r)+" to "+r.name+".":"Marked as sent."):(r.type=="wd"?"Declined and refunded "+rqWhat(r)+" to "+r.name+".":"Declined."))}
-  catch(e){say("Could not update the request: "+(e&&(e.code||e.message)||"error"))}}
+  catch(e){RGONE.delete(id);try{drawRq()}catch(e2){}say("Could not update the request: "+(e&&(e.code||e.message)||"error"))}}
 async function bankSave(){const v=$("bkbot").value.trim();try{await bankPut(d=>{d.bot=v});say(v?"Bot set to "+v+".":"Bot cleared.")}catch(e){say("Could not save the bot name.")}}
 setInterval(()=>{try{if($("bkm")&&!$("bkm").classList.contains("hide"))bkDraw();drawRq()}catch(e){}},30000);
-function drawRq(){["dp","wd"].forEach(k=>{const e=$(k+"ui");if(!e)return;const dep=k=="dp",L=BK.all.filter(r=>rqKey(r)==k),pe=L.filter(r=>r.st=="pending"),dn=L.filter(r=>r.st!="pending"&&!(r.st=="done"&&Date.now()-(r.dt||r.t||0)>6e5)).slice(0,15);
+function drawRq(){["dp","wd"].forEach(k=>{const e=$(k+"ui");if(!e)return;const dep=k=="dp",L=BK.all.filter(r=>rqKey(r)==k&&!RGONE.has(r.id)),pe=L.filter(r=>r.st=="pending"),dn=L.filter(r=>r.st!="pending"&&r.st!="declined"&&!(r.st=="done"&&Date.now()-(r.dt||r.t||0)>6e5)).slice(0,15);
   const row=r=>`<div class="rqr"><span class="n"><b>${esc(r.name||"Player")}</b> · ${esc(rqWhat(r))}<br><small class="tag">${new Date(r.t).toLocaleString()}</small></span>${r.st=="pending"?`<button class="btn pri" onclick="rqAct('${r.id}','ok')">${dep?"Approve and credit":"Mark sent"}</button><button class="btn" style="color:#e0505f" onclick="rqAct('${r.id}','no')">${dep?"Decline":"Decline and refund"}</button>`:`<span class="chip ${r.st=="done"?"ok":"no"}">${r.st=="done"?"Done":"Declined"}</span>`}</div>`;
   const av=document.activeElement;if(av&&av.id=="bkbot")return;
   e.innerHTML=`<h3 style="margin-top:12px">Bot username (shown to players in Deposit and Withdraw)</h3><div class="row"><input id="bkbot" value="${esc(BK.bot)}" placeholder="Roblox username of your bot" autocomplete="off"><button class="btn pri" style="flex:0 0 80px" onclick="bankSave()">Save</button></div><h3 style="margin-top:16px">${dep?"Deposit":"Withdraw"} requests waiting (${pe.length})</h3>${pe.length?pe.map(row).join(""):'<div class="note">Nothing waiting.</div>'}${dn.length?'<h3 style="margin-top:16px">Recent</h3>'+dn.map(row).join(""):""}`})}
