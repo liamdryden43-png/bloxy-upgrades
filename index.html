@@ -632,7 +632,7 @@ const find=n=>pool().find(p=>p.n==n)||LIB.find(p=>p.n==n)||(S.cu&&S.cu[n])||{n,e
 const rem=p=>(p.stock==null?1:p.stock)-(TK[p.id]||0)+(LOST[p.n]||0);
 const gt=()=>Math.min(pv($("gt").value),Math.max(HG,0));
 async function addLost(n,q){const p=find(n),d={n,e:p.e,v:p.v,img:p.img||""};if(DB){try{for(let i=0;i<q;i++)await DB.collection("lostpets").doc(Date.now()+"-"+i+Math.random().toString(36).slice(2,5)).set(d)}catch(e){}}else{LOST[n]=(LOST[n]||0)+q;LD[n]=d}}
-async function addGem(a){if(!a)return;if(DB){try{await DB.collection("gemlog").doc(Date.now()+Math.random().toString(36).slice(2,6)).set({amt:a})}catch(e){}}else{HG+=a;S.hg=HG}}
+async function addGem(a){if(!a)return true;if(DB){try{await DB.collection("gemlog").doc(Date.now()+Math.random().toString(36).slice(2,6)).set({amt:a});return true}catch(e){say("Could not change the pool gems: "+((e&&e.message)||"server error")+". Refresh and try again.");return false}}else{HG+=a;S.hg=HG;return true}}
 const ic=(p,z=44)=>p.img?`<img src="${esc(p.img)}" alt="" style="width:${z}px;height:${z}px;object-fit:cover;flex:none;border-radius:10px;image-rendering:auto">`:`<span style="display:inline-flex;width:${z}px;height:${z}px;align-items:center;justify-content:center;border-radius:10px;background:#1f2a48;font-size:20px;font-weight:800">${esc((p.n.replace("Gargantuan ","")[0]||"?").toUpperCase())}</span>`;
 const addWag=x=>{x=Math.floor(+x||0);if(x>0){S.wag=(S.wag||0)+x;try{drawRing()}catch(e){}}};
 const LVT=n=>10e9*n*(n+1),lvW=w=>{w=+w||0;let n=Math.max(0,Math.floor((Math.sqrt(1+4*w/10e9)-1)/2));while(LVT(n+1)<=w)n++;while(n>0&&LVT(n)>w)n--;return n},lvl=()=>lvW(S.wag);
@@ -722,7 +722,7 @@ async function roll(){if(busy)return;const N=Math.min(Math.max(Math.floor(+$("np
   await sleep(fast?1150:3300);played++;S.xp+=win?35:10;S.wag=(S.wag||0)+s.v;const w0=S.won;
   if(win){wins++;for(const p of t){const q=Math.max(1,Math.min(tqm.get(p.id)||1,rem(p)));for(let k=0;k<q;k++)await take(p);S.inv[p.n]=(S.inv[p.n]||0)+q;S.won+=p.v*q;tgts.delete(p.id)}if(gv){S.gems+=gv;S.won+=gv;await addGem(-gv)}
    R.textContent=(fast?`Play ${played}/${N}: `:"")+"You won "+t.map(nm).concat(gv?[fmt(gv)+" gems"]:[]).join(", ")+"!";R.className="res w"}
-  else{R.textContent=(fast?`Play ${played}/${N}: `:"")+"Not this time. Rolled "+r.toFixed(2)+". Your stake went into the pool.";R.className="res l";for(const [n,q] of sp)await addLost(n,q);await addGem(s.g)}
+  else{R.textContent=(fast?`Play ${played}/${N}: `:"")+"Not this time. Rolled "+r.toFixed(2)+". You lost your stake.";R.className="res l"}
   const wv=S.won-w0;S.pl=(S.pl||0)+1;if(win)S.wn=(S.wn||0)+1;S.net=(S.net||0)+wv-s.v;if(wv>(S.big||0))S.big=wv;S.hist.unshift({win,pn:wv,stake:s.v,t:t.map(nm).concat(gv?[fmt(gv)+" gems"]:[]).join(", "),c});S.hist=S.hist.slice(0,30);redraw()}
  if(played>1||(played&&played<N)){R.textContent=`Played ${played}: ${wins} win${wins==1?"":"s"}, ${played-wins} loss${played-wins==1?"":"es"}.`+(played<N?" Stopped early: nothing left to aim for or stake.":"");R.className="res"}
  $("ptr").style.transitionDuration="";selPets.clear();$("gin").value="";$("gt").value="";busy=false;redraw()}
@@ -902,7 +902,7 @@ function wAll(){const L=wItems(),ks=L.flatMap(x=>Array.from({length:x.c},(_,j)=>
 document.addEventListener("click",e=>{if(!e.target.closest("#wb,#wp,.wbl")){const w=$("wp");if(w)w.classList.add("hide")}});
 async function gemStock(sign){const a=pv($("gsa").value);if(!(a>0)){say("Type an amount first, like 1b.");return}
  const amt=sign>0?a:-Math.min(a,Math.max(HG,0));if(!amt){say("The Gems pool is already empty.");return}
- await addGem(amt);$("gsa").value="";say((amt>0?"Added ":"Removed ")+fmt(Math.abs(amt))+" gems "+(amt>0?"to":"from")+" the upgrader.");redraw()}
+ if(!(await addGem(amt)))return;$("gsa").value="";say((amt>0?"Added ":"Removed ")+fmt(Math.abs(amt))+" gems "+(amt>0?"to":"from")+" the upgrader.");redraw()}
 
 const RC="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 function drawRbx(){}
