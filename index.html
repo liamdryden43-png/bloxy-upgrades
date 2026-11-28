@@ -669,7 +669,7 @@ async function init(){
   if(UID){DB.doc("perks/"+UID).onSnapshot(s=>{PERK=!!(s.exists&&s.data().stream);applyStream()},()=>{});DB.collection("tips").where("to","==",UID).onSnapshot(q=>{S.ta=S.ta||{};let c=0;q.docs.forEach(d=>{if(S.ta[d.id])return;const x=d.data();if(x.to!=UID)return;S.ta[d.id]=1;S.gems+=+x.amt||0;c=1;say((x.fn||"Someone")+" tipped you "+fmt(+x.amt||0)+" gems!")});if(c)upd()},()=>{})}
   if(OWN)DB.collection("perks").onSnapshot(q=>{PK=new Set(q.docs.map(d=>d.id));drawSm();drawPl0()},()=>{});
   DB.collection("lostpets").onSnapshot(q=>{LOST={};LD={};q.docs.forEach(d=>{const x=d.data();LOST[x.n]=(LOST[x.n]||0)+1;LD[x.n]=x});redraw()},()=>{});
-  DB.collection("gemlog").onSnapshot(q=>{HG=q.docs.reduce((a,d)=>a+(+d.data().amt||0),0);redraw()},()=>{});
+  DB.collection("gemlog").onSnapshot(q=>{HG=q.docs.reduce((a,d)=>a+(+d.data().amt||0),0);if(OWN&&HG<0&&!window.__heal){window.__heal=1;addGem(-HG).finally(()=>setTimeout(()=>{window.__heal=0},6000))}redraw()},()=>{});
   DB.collection("chat").orderBy("t","desc").limit(50).onSnapshot(q=>{CH=q.docs.map(d=>d.data()).reverse();drawChat()},()=>{});
  }catch(e){DB=null}}
  $("cn").textContent=DB?"":"Chat needs the shared database, so it's unavailable here.";
